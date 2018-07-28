@@ -7,13 +7,13 @@ A Simple Internet Speed Meter Extension for Gnome Shell.
 
 ### Installation from Git Source
 
-##### 1. If previous versions were installed/existed, remove them first.
+##### 1. If previous version was installed/existed, remove them first.
 
 `sudo rm -rf /usr/share/gnome-shell/extensions/Internet-Speed-Meter@TH3L0N3C0D3R`
 
 `rm -rf ~/.local/share/gnome-shell/extensions/Internet-Speed-Meter@TH3L0N3C0D3R`
 
-##### 2. Install Gnome Tweak Tool if not installed
+##### 2. If `Gnome Tweak Tool` is not installed, install it.
 
 Fedora/RHEL/CentOS: `sudo dnf install gnome-tweak-tool`
 
