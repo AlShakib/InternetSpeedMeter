@@ -21,23 +21,17 @@ Debian/Ubuntu: `sudo apt install gnome-tweak-tool`
 
 Arch/Manjaro: `sudo pacman -S gnome-tweaks`
 
-##### 3. Download and Install
+##### 3. Install
 
-`git clone https://gitlab.com/TH3L0N3C0D3R/Internet-Speed-Meter.git`
+`git clone https://gitlab.com/TH3L0N3C0D3R/Internet-Speed-Meter.git ~/.local/share/gnome-shell/extensions/Internet-Speed-Meter@TH3L0N3C0D3R`
 
-`cd Internet-Speed-Meter`
 
-`mkdir -p ~/.local/share/gnome-shell/extensions/Internet-Speed-Meter@TH3L0N3C0D3R`
+##### 4. Refresh gnome shell:
+Hit `Alt + F2`
 
-`cp -v * ~/.local/share/gnome-shell/extensions/Internet-Speed-Meter@TH3L0N3C0D3R`
+Type `r` and hit `Enter`
 
-##### 4. Refresh gnome shell: `Alt + F2 r Enter`
-
-##### 5. Enable Internet Speed Meter with `Gnome Tweak Tool`.
-
-### One Click Installation
-
-Coming Soon...
+##### 5. Enable extension in `Gnome Tweak Tool`.
 
 ### Compatibility
 
