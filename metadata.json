@@ -2,7 +2,7 @@
   "description": "Simple internet speed meter for gnome shell.",
   "uuid": "Internet-Speed-Meter@TH3L0N3C0D3R",
   "url": "https://gitlab.com/TH3L0N3C0D3R/Internet-Speed-Meter",
-  "version": 1.0,
+  "version": 1.1,
   "shell-version": [  "3.20",
                       "3.22",
                       "3.24",
