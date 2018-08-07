@@ -25,7 +25,7 @@ Debian/Ubuntu: `sudo apt install gnome-tweak-tool`
 
 Arch/Manjaro: `sudo pacman -S gnome-tweaks`
 
-##### 3. Install
+##### 3. Install Internet Speed Meter
 
 `git clone https://gitlab.com/TH3L0N3C0D3R/Internet-Speed-Meter.git ~/.local/share/gnome-shell/extensions/Internet-Speed-Meter@TH3L0N3C0D3R`
 
