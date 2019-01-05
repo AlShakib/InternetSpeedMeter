@@ -1,7 +1,7 @@
 /*
 * Name: Internet Speed Meter
-* Version: 1.1
-* Description: A simple internet speed meter extension for gnome shell.
+* Version: 1.2
+* Description: A simple and minimal internet speed meter for Gnome Shell.
 * Author: @TH3L0N3C0D3R
 * GitLab: https://gitlab.com/TH3L0N3C0D3R/Internet-Speed-Meter
 * License: GPLv3.0
@@ -11,7 +11,7 @@ const St = imports.gi.St;
 const Main = imports.ui.main;
 const Gio = imports.gi.Gio;
 const Mainloop = imports.mainloop;
-const refreshTime = 1.0;
+const refreshTime = 1.0; // Set refresh time to one second.
 
 let prevBytes = 0.0, prevSpeed = 0.0;
 
@@ -22,7 +22,7 @@ function getNetSpeed() {
     let dataStream = Gio.DataInputStream.new(fileStream);
     let bytes = 0;
     let line;
-    while(line = dataStream.read_line(null)) {
+    while((line = dataStream.read_line(null)) != null) {
       line = String(line);
       line = line.trim();
       let column = line.split(/\W+/);
@@ -41,8 +41,8 @@ function getNetSpeed() {
     if (prevBytes === 0.0) {
       prevBytes = bytes;
     }
-    let speed = (bytes - prevBytes) / (refreshTime * 1000.0); // To skip Bytes/Sec.
-    netSpeed.set_text(netSpeedFormat(speed))
+    let speed = (bytes - prevBytes) / (refreshTime * 1024.0); // Skip Bytes/Sec.
+    netSpeed.set_text(netSpeedFormat(speed));
     prevBytes = bytes;
     prevSpeed = speed;
   } catch(e) {
@@ -52,13 +52,13 @@ function getNetSpeed() {
 }
 
 function netSpeedFormat(speed) {
-  let units = ["KB", "MB", "GB", "TB"];
+  let units = ["KB/s", "MB/s", "GB/s", "TB/s"];
   if (speed === 0.0) {
     return "⇅ 0.00 " + units[0];
   }
   let i = 0;
-  while(speed >= 1000.0) {  // Convert KB, MB, GB, TB
-    speed /= 1000.0;        // 1 MB = 1000 KB
+  while(speed >= 1024.0) {  // Convert KB, MB, GB, TB
+    speed /= 1024.0;        // 1 MegaBytes = 1024 KiloBytes
     i++;
   }
   return String("⇅ " + speed.toFixed(2) + " " + units[i]);
