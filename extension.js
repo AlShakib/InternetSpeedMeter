@@ -1,6 +1,6 @@
 /*
 * Name: Internet Speed Meter
-* Version: 1.2
+* Version: 1.3
 * Description: A simple and minimal internet speed meter for Gnome Shell.
 * Author: @TH3L0N3C0D3R
 * GitLab: https://gitlab.com/TH3L0N3C0D3R/Internet-Speed-Meter
