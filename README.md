@@ -43,7 +43,7 @@ You may find Gnome Tweaks for other distributions as well. Install them accordin
 
 ### Install Internet Speed Meter from Gnome Extensions
 
-Visit [Internet Speed Meter](#) 
+Visit [Internet Speed Meter](https://extensions.gnome.org/extension/2980/internet-speed-meter/) 
 
 ### Install Internet Speed Meter from source
 
