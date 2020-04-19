@@ -65,16 +65,11 @@ is_warning() {
   fi
 }
 
-if ! [ -x "$(command -v rsync)" ]; then
-  print_failed "Rsync is not found."
-  exit 1
-fi
-
 # install extension
 install() {
   print "Installing to ${INSTALL_DIR}"
-  mkdir -p "${INSTALL_DIR}/InternetSpeedMeter@alshakib.dev"
-  rsync -av --delete "${SRC_DIR}/src/" "${INSTALL_DIR}/InternetSpeedMeter@alshakib.dev" &>> "$LOG_FILE"
+  rm -rf "${INSTALL_DIR}/InternetSpeedMeter@alshakib.dev"
+  cp -rf "${SRC_DIR}/src" "${INSTALL_DIR}/InternetSpeedMeter@alshakib.dev" &>> "$LOG_FILE"
   is_failed "Done" "Skipping: Can not install to ${INSTALL_DIR}. See log for more info."
 }
 
