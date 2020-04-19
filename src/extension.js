@@ -13,6 +13,7 @@ const Mainloop = imports.mainloop;
 const refreshTime = 1.0; // Set refresh time to one second.
 
 let prevBytes = 0.0, prevSpeed = 0.0;
+let button, timeout, netSpeed;
 
 function getNetSpeed() {
   try {
@@ -37,6 +38,7 @@ function getNetSpeed() {
       }
     }
     fileStream.close(null);
+    dataStream.close(null);
     if (prevBytes === 0.0) {
       prevBytes = bytes;
     }
@@ -63,7 +65,6 @@ function netSpeedFormat(speed) {
   return String("⇅ " + speed.toFixed(2) + " " + units[i]);
 }
 
-let button, timeout, netSpeed;
 function init() {
   button = new St.Bin({
     style_class: 'panel-button',
