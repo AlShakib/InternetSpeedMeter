@@ -47,17 +47,29 @@ Visit [Internet Speed Meter](#)
 
 ### Install Internet Speed Meter from source
 
-1. Run,
+1. Clone this repository
 
-```bash
-git clone https://gitlab.com/AlShakib/InternetSpeedMeter.git ~/.local/share/gnome-shell/extensions/InternetSpeedMeter@alshakib.dev
-```
+   ```bash
+   git clone https://gitlab.com/AlShakib/InternetSpeedMeter.git
+   ```
 
-2. Hit `ALT + F2`
+2. Change current directory to repository
 
-3. Type `r` and hit `Enter`
+   ```bash
+   cd InternetSpeedMeter
+   ```
 
-4. Enable extension in Gnome Tweaks
+3. Now run
+
+   ```bash
+   chmod +x ./install.sh && ./install.sh
+   ```
+
+4. Hit `ALT + F2`
+
+5. Type `r` and hit `Enter`
+
+6. Enable Internet Speed Meter extension in Gnome Tweaks
 
 ## Contributing
 
