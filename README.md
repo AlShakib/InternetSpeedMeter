@@ -39,7 +39,7 @@ For Arch Linux,
 sudo pacman -S gnome-tweak-tool
 ```
 
-You may find Gnome Tweaks for other distribution as well. Install them accordingly.
+You may find Gnome Tweaks for other distributions as well. Install them accordingly.
 
 ### Install Internet Speed Meter from Gnome Extensions
 
@@ -67,11 +67,10 @@ Please make sure to update tests as appropriate.
 
 ## Thanks to
 
-- [TelegramBots](https://github.com/rubenlagus/TelegramBots)
 - Project Icon is made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com)
 
 ## License
 
 [GNU General Public License v3.0](LICENSE)
 
-Copyright © 2020 [Al Shakib
+Copyright © 2020 [Al Shakib](https://alshakib.dev)
