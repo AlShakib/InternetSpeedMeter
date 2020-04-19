@@ -1,45 +1,77 @@
 # ⇅ Internet Speed Meter
-A Simple and Minimal Internet Speed Meter Extension for Gnome Shell.
 
-### Screenshot
+A simple and minimal internet speed meter extension for Gnome Shell.
 
-![Screen_Two.png](https://s26.postimg.cc/yhgm1dleh/Screen_Two.png)
+## Table of Contents
 
-### Installation
+[[_TOC_]]
 
-###### Gnome Extensions: [Internet Speed Meter](https://extensions.gnome.org/extension/1461/internet-speed-meter/) 
+## Screenshot
 
-### Installation from Git Source
+![Screenshot](screenshot.png)
 
-##### 1. If previous version was installed, remove them first.
+## Getting Started
 
-`sudo rm -rf /usr/share/gnome-shell/extensions/Internet-Speed-Meter@TH3L0N3C0D3R`
+To use this extension, you will need
 
-`rm -rf ~/.local/share/gnome-shell/extensions/Internet-Speed-Meter@TH3L0N3C0D3R`
+- Gnome Shell 3.22 or later
 
-##### 2. If `Gnome Tweak Tool` is not installed, install it.
+### Prerequisite:
 
-Fedora/RHEL/CentOS: `sudo yum install gnome-tweak-tool`
+#### Install Gnome Tweaks
 
-Debian/Ubuntu: `sudo apt install gnome-tweak-tool`
+For Ubuntu,
 
-Arch/Manjaro: `sudo pacman -S gnome-tweaks`
+```bash
+sudo add-apt-repository universe
+sudo apt install gnome-tweaks
+```
 
-##### 3. Install Internet Speed Meter
+For Fedora,
 
-`git clone https://gitlab.com/TH3L0N3C0D3R/Internet-Speed-Meter.git ~/.local/share/gnome-shell/extensions/Internet-Speed-Meter@TH3L0N3C0D3R`
+```bash
+sudo dnf install gnome-tweaks
+```
 
+For Arch Linux,
 
-##### 4. Refresh gnome shell:
-Hit `Alt + F2`
+```bash
+sudo pacman -S gnome-tweak-tool
+```
 
-Type `r` and hit `Enter`
+You may find Gnome Tweaks for other distribution as well. Install them accordingly.
 
-##### 5. Enable extension in `Gnome Tweak Tool`.
+### Install Internet Speed Meter from Gnome Extensions
 
-### Compatibility
+Visit [Internet Speed Meter](#) 
 
-This extension has been tested with Gnome 3.20+.
+### Install Internet Speed Meter from source
 
-### Public License
-GPLv3.0
+1. Run,
+
+```bash
+git clone https://gitlab.com/AlShakib/InternetSpeedMeter.git ~/.local/share/gnome-shell/extensions/InternetSpeedMeter@alshakib.dev
+```
+
+2. Hit `ALT + F2`
+
+3. Type `r` and hit `Enter`
+
+4. Enable extension in Gnome Tweaks
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+## Thanks to
+
+- [TelegramBots](https://github.com/rubenlagus/TelegramBots)
+- Project Icon is made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com)
+
+## License
+
+[GNU General Public License v3.0](LICENSE)
+
+Copyright © 2020 [Al Shakib
