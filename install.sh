@@ -7,9 +7,17 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 SRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )";
 LOG_DIR="${SRC_DIR}/log"
-LOG_FILE="${LOG_DIR}/$(date +%d%m%y-%H%M).log";
+LOG_FILE="${LOG_DIR}/build.log";
 mkdir -p "${LOG_DIR}"
-touch "${LOG_FILE}"
+if [[ -f "${LOG_FILE}" ]]; then
+  echo '' >> "${LOG_FILE}"
+  echo "$(date '+%d/%m/%Y %H:%M:%S')" >> "${LOG_FILE}"
+  echo '' >> "${LOG_FILE}"
+else
+  touch "${LOG_FILE}"
+  echo "$(date '+%d/%m/%Y %H:%M:%S')" >> "${LOG_FILE}"
+  echo '' >> "${LOG_FILE}"
+fi
 
 INSTALL_DIR="${HOME}/.local/share/gnome-shell/extensions"
 if [[ "$(id -u)" -eq 0 ]]; then
