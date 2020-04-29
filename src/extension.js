@@ -9,6 +9,7 @@
 const St = imports.gi.St;
 const Main = imports.ui.main;
 const Gio = imports.gi.Gio;
+const Clutter = imports.gi.Clutter;
 const Mainloop = imports.mainloop;
 const refreshTime = 1.0; // Set refresh time to one second.
 
@@ -76,7 +77,8 @@ function init() {
   });
   netSpeed = new St.Label({
     text: '⇅ -.-- --',
-    style_class: 'netSpeedLabel'
+    style_class: 'netSpeedLabel',
+    y_align: Clutter.ActorAlign.CENTER
   });
   button.set_child(netSpeed);
 }
