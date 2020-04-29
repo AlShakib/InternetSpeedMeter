@@ -14,7 +14,7 @@ A simple and minimal internet speed meter extension for Gnome Shell.
 
 To use this extension, you will need
 
-- Gnome Shell 3.22 or later
+- Gnome Shell 3.20 or later
 
 ### Prerequisite:
 
