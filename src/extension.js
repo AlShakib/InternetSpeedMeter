@@ -11,18 +11,19 @@ const Main = imports.ui.main;
 const Gio = imports.gi.Gio;
 const Clutter = imports.gi.Clutter;
 const Mainloop = imports.mainloop;
+
 const refreshTime = 1.0; // Set refresh time to one second.
 
-let prevBytes = 0.0, prevSpeed = 0.0;
-let button, timeout, netSpeed, speed;
+let prevBytes = 0.0, speed = 0.0;
+let container, timeout, netSpeed;
 
 function getNetSpeed() {
   try {
     let file = Gio.file_new_for_path('/proc/net/dev');
     let fileStream = file.read(null);
     let dataStream = Gio.DataInputStream.new(fileStream);
-    let bytes = 0;
-    let line;
+    let bytes = 0.0;
+    let line = '';
     while((line = dataStream.read_line(null)) != null) {
       line = String(line);
       line = line.trim();
@@ -43,10 +44,9 @@ function getNetSpeed() {
     if (prevBytes === 0.0) {
       prevBytes = bytes;
     }
-    speed = (bytes - prevBytes) / (refreshTime * 1024.0); // Skip Bytes/Sec.
-    netSpeed.set_text(netSpeedFormat(speed));
+    speed = (bytes - prevBytes) / (refreshTime * 1000.0); // Skip Bytes/Sec.
+    netSpeed.set_text("⇅ " + netSpeedFormat(speed));
     prevBytes = bytes;
-    prevSpeed = speed;
   } catch(e) {
     netSpeed.set_text(e.message);
   }
@@ -55,19 +55,16 @@ function getNetSpeed() {
 
 function netSpeedFormat(speed) {
   let units = ["KB/s", "MB/s", "GB/s", "TB/s"];
-  if (speed === 0.0) {
-    return "⇅ 0.00 " + units[0];
-  }
   let i = 0;
   while(speed >= 1000.0) {  // Convert KB, MB, GB, TB
     speed /= 1000.0;        // 1 MegaBytes = 1000 KiloBytes
     i++;
   }
-  return String("⇅ " + speed.toFixed(2) + " " + units[i]);
+  return String(speed.toFixed(2) + " " + units[i]);
 }
 
 function init() {
-  button = new St.Bin({
+  container = new St.Bin({
     style_class: 'panel-button',
     reactive: true,
     can_focus: false,
@@ -80,15 +77,15 @@ function init() {
     style_class: 'netSpeedLabel',
     y_align: Clutter.ActorAlign.CENTER
   });
-  button.set_child(netSpeed);
+  container.set_child(netSpeed);
 }
 
 function enable() {
-  Main.panel._rightBox.insert_child_at_index(button, 0);
+  Main.panel._rightBox.insert_child_at_index(container, 0);
   timeout = Mainloop.timeout_add_seconds(refreshTime, getNetSpeed);
 }
 
 function disable() {
   Mainloop.source_remove(timeout);
-  Main.panel._rightBox.remove_child(button);
+  Main.panel._rightBox.remove_child(container);
 }
