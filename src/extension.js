@@ -14,7 +14,7 @@ const Mainloop = imports.mainloop;
 const refreshTime = 1.0; // Set refresh time to one second.
 
 let prevBytes = 0.0, prevSpeed = 0.0;
-let button, timeout, netSpeed;
+let button, timeout, netSpeed, speed;
 
 function getNetSpeed() {
   try {
@@ -43,7 +43,7 @@ function getNetSpeed() {
     if (prevBytes === 0.0) {
       prevBytes = bytes;
     }
-    let speed = (bytes - prevBytes) / (refreshTime * 1024.0); // Skip Bytes/Sec.
+    speed = (bytes - prevBytes) / (refreshTime * 1024.0); // Skip Bytes/Sec.
     netSpeed.set_text(netSpeedFormat(speed));
     prevBytes = bytes;
     prevSpeed = speed;
@@ -59,8 +59,8 @@ function netSpeedFormat(speed) {
     return "⇅ 0.00 " + units[0];
   }
   let i = 0;
-  while(speed >= 1024.0) {  // Convert KB, MB, GB, TB
-    speed /= 1024.0;        // 1 MegaBytes = 1024 KiloBytes
+  while(speed >= 1000.0) {  // Convert KB, MB, GB, TB
+    speed /= 1000.0;        // 1 MegaBytes = 1000 KiloBytes
     i++;
   }
   return String("⇅ " + speed.toFixed(2) + " " + units[i]);
