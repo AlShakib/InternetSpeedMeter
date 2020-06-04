@@ -13,8 +13,10 @@ const Clutter = imports.gi.Clutter;
 const Mainloop = imports.mainloop;
 
 const refreshTime = 1.0; // Set refresh time to one second.
+const unitBase = 1000.0; // 1 GB == 1000MB or 1MB == 1000KB etc.
 
-let prevBytes = 0.0, speed = 0.0;
+let prevUploadBytes = 0, prevDownloadBytes = 0;
+let uploadSpeed = 0.0, downloadSpeed = 0.0;
 let container, timeout, netSpeed;
 
 function getNetSpeed() {
@@ -22,7 +24,8 @@ function getNetSpeed() {
     let file = Gio.file_new_for_path('/proc/net/dev');
     let fileStream = file.read(null);
     let dataStream = Gio.DataInputStream.new(fileStream);
-    let bytes = 0.0;
+    let uploadBytes = 0;
+    let downloadBytes = 0;
     let line = '';
     while((line = dataStream.read_line(null)) != null) {
       line = String(line);
@@ -36,17 +39,29 @@ function getNetSpeed() {
          !column[0].match(/^tap[0-9]+/) &&
          !column[0].match(/^vnet[0-9]+/) &&
          !column[0].match(/^virbr[0-9]+/)) {
-        bytes = bytes + parseInt(column[1]) + parseInt(column[9]);
+        uploadBytes = uploadBytes + parseInt(column[9]);
+        downloadBytes = downloadBytes + parseInt(column[1]);
       }
     }
     fileStream.close(null);
     dataStream.close(null);
-    if (prevBytes === 0.0) {
-      prevBytes = bytes;
+    if (prevUploadBytes === 0) {
+      prevUploadBytes = uploadBytes;
     }
-    speed = (bytes - prevBytes) / (refreshTime * 1000.0); // Skip Bytes/Sec.
-    netSpeed.set_text("⇅ " + netSpeedFormat(speed));
-    prevBytes = bytes;
+    if (prevDownloadBytes === 0) {
+      prevDownloadBytes = downloadBytes;
+    }
+
+    // Current upload speed
+    uploadSpeed = (uploadBytes - prevUploadBytes) / (refreshTime * unitBase);
+
+    // Current download speed
+    downloadSpeed = (downloadBytes - prevDownloadBytes) / (refreshTime * unitBase);
+
+    // Show upload + download = total speed on shell
+    netSpeed.set_text("⇅ " + netSpeedFormat(uploadSpeed + downloadSpeed));
+    prevUploadBytes = uploadBytes;
+    prevDownloadBytes = downloadBytes;
   } catch(e) {
     netSpeed.set_text(e.message);
   }
@@ -56,8 +71,8 @@ function getNetSpeed() {
 function netSpeedFormat(speed) {
   let units = ["KB/s", "MB/s", "GB/s", "TB/s"];
   let i = 0;
-  while(speed >= 1000.0) {  // Convert KB, MB, GB, TB
-    speed /= 1000.0;        // 1 MegaBytes = 1000 KiloBytes
+  while(speed >= unitBase) {  // Convert speed to KB, MB, GB or TB
+    speed /= unitBase;        // 1MB == 1000KB
     i++;
   }
   return String(speed.toFixed(2) + " " + units[i]);
