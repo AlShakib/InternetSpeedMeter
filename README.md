@@ -59,7 +59,7 @@ Visit [Internet Speed Meter](https://extensions.gnome.org/extension/2980/interne
 1. Clone this repository
 
    ```bash
-   git clone https://gitlab.com/AlShakib/InternetSpeedMeter.git
+   git clone https://github.com/AlShakib/InternetSpeedMeter.git
    ```
 
 2. Change current directory to repository
