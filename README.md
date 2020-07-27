@@ -4,7 +4,16 @@ A simple and minimal internet speed meter extension for Gnome Shell.
 
 ## Table of Contents
 
-[[_TOC_]]
+* [Screenshot](#screenshot)
+* [Getting Started](#getting-started)
+  + [Prerequisite:](#prerequisite-)
+    - [Install Gnome Tweaks](#install-gnome-tweaks)
+  + [Install Internet Speed Meter from Gnome Extensions](#install-internet-speed-meter-from-gnome-extensions)
+  + [Install Internet Speed Meter from source](#install-internet-speed-meter-from-source)
+* [Contributing](#contributing)
+* [Thanks to](#thanks-to)
+* [License](#license)
+
 
 ## Screenshot
 
