@@ -1,6 +1,6 @@
 # ⇅ Internet Speed Meter
 
-A simple and minimal internet speed meter extension for Gnome Shell.
+A simple and minimal Internet Speed Meter extension for Gnome Shell.
 
 ## Table of Contents
 
@@ -83,8 +83,6 @@ Visit [Internet Speed Meter](https://extensions.gnome.org/extension/2980/interne
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-Please make sure to update tests as appropriate.
 
 ## Thanks to
 
