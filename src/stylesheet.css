@@ -2,7 +2,7 @@
 * Name: Internet Speed Meter
 * Description: A simple and minimal internet speed meter extension for Gnome Shell.
 * Author: Al Shakib
-* GitLab: https://gitlab.com/AlShakib/InternetSpeedMeter
+* GitHub: https://github.com/AlShakib/InternetSpeedMeter
 * License: GPLv3.0
 */
 
