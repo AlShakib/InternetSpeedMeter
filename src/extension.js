@@ -17,7 +17,7 @@ const unitBase = 1000.0; // 1 GB == 1000MB or 1MB == 1000KB etc.
 
 let prevUploadBytes = 0, prevDownloadBytes = 0;
 let uploadSpeed = 0.0, downloadSpeed = 0.0;
-let container, timeout, netSpeed;
+let container, timeout, netSpeed, defaultNetSpeedText;
 
 function getNetSpeed() {
   try {
@@ -63,7 +63,7 @@ function getNetSpeed() {
     prevUploadBytes = uploadBytes;
     prevDownloadBytes = downloadBytes;
   } catch(e) {
-    netSpeed.set_text(e.message);
+    netSpeed.set_text( defaultNetSpeedText );
   }
   return true;
 }
@@ -87,8 +87,9 @@ function init() {
     y_expand: false,
     track_hover: false
   });
+  defaultNetSpeedText = '⇅ -.-- --';
   netSpeed = new St.Label({
-    text: '⇅ -.-- --',
+    text: defaultNetSpeedText ,
     style_class: 'netSpeedLabel',
     y_align: Clutter.ActorAlign.CENTER
   });
