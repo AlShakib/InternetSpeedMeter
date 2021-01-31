@@ -25,9 +25,7 @@ To use this extension, you will need
 
 - Gnome Shell 3.20 or later
 
-### Prerequisite:
-
-#### Install Gnome Tweaks
+### Prerequisite: Install Gnome Tweaks
 
 For Ubuntu,
 
@@ -52,7 +50,7 @@ You may find Gnome Tweaks for other distributions as well. Install them accordin
 
 ### Install Internet Speed Meter from Gnome Extensions
 
-Visit [Internet Speed Meter](https://extensions.gnome.org/extension/2980/internet-speed-meter/) 
+Visit [Internet Speed Meter - GNOME Shell Extensions](https://extensions.gnome.org/extension/2980/internet-speed-meter/) 
 
 ### Install Internet Speed Meter from source
 
@@ -92,4 +90,4 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 [GNU General Public License v3.0](LICENSE)
 
-Copyright © 2020 [Al Shakib](https://alshakib.dev)
+Copyright © 2020 - 2021 [Al Shakib](https://alshakib.dev)
