@@ -14,7 +14,8 @@ const Clutter = imports.gi.Clutter;
 const Mainloop = imports.mainloop;
 
 const refreshTime = 1.0; // Set refresh time to one second.
-const unitBase = 1000.0; // 1 GB == 1000MB or 1MB == 1000KB etc.
+const unitBase = 1024.0; // 1 GB == 1024MB or 1MB == 1024KB etc.
+const units = ["KB/s", "MB/s", "GB/s", "TB/s"];
 
 let prevUploadBytes = 0, prevDownloadBytes = 0;
 let uploadSpeed = 0.0, downloadSpeed = 0.0;
@@ -73,10 +74,9 @@ function getNetSpeed() {
 }
 
 function netSpeedFormat(speed) {
-  let units = ["KB/s", "MB/s", "GB/s", "TB/s"];
   let i = 0;
   while(speed >= unitBase) {  // Convert speed to KB, MB, GB or TB
-    speed /= unitBase;        // 1MB == 1000KB
+    speed /= unitBase;
     i++;
   }
   return String(speed.toFixed(2) + " " + units[i]);
