@@ -25,47 +25,53 @@ let logSize = 8000; // about 8k
 
 function getNetSpeed() {
   try {
-    let file = Gio.file_new_for_path('/proc/net/dev');
-    let fileStream = file.read(null);
-    let dataStream = Gio.DataInputStream.new(fileStream);
-    let uploadBytes = 0;
-    let downloadBytes = 0;
-    let line = '';
-    while((line = dataStream.read_line(null)) != null) {
-      line = String(line);
-      line = line.trim();
-      let column = line.split(/\W+/);
-      if (column.length <= 2) break;
-      if (column[0] != 'lo' &&
-         !isNaN(parseInt(column[1])) &&
-         !column[0].match(/^br[0-9]+/) &&
-         !column[0].match(/^tun[0-9]+/) &&
-         !column[0].match(/^tap[0-9]+/) &&
-         !column[0].match(/^vnet[0-9]+/) &&
-         !column[0].match(/^virbr[0-9]+/)) {
-        uploadBytes = uploadBytes + parseInt(column[9]);
-        downloadBytes = downloadBytes + parseInt(column[1]);
+    if (netSpeed) {
+      let file = Gio.file_new_for_path('/proc/net/dev');
+      let fileStream = file.read(null);
+      let dataStream = Gio.DataInputStream.new(fileStream);
+      let uploadBytes = 0;
+      let downloadBytes = 0;
+      let line = '';
+      while((line = dataStream.read_line(null)) != null) {
+        line = String(line);
+        line = line.trim();
+        let column = line.split(/\W+/);
+        if (column.length <= 2) break;
+        if (column[0] != 'lo' &&
+           !isNaN(parseInt(column[1])) &&
+           !column[0].match(/^br[0-9]+/) &&
+           !column[0].match(/^tun[0-9]+/) &&
+           !column[0].match(/^tap[0-9]+/) &&
+           !column[0].match(/^vnet[0-9]+/) &&
+           !column[0].match(/^virbr[0-9]+/)) {
+          uploadBytes = uploadBytes + parseInt(column[9]);
+          downloadBytes = downloadBytes + parseInt(column[1]);
+        }
       }
-    }
-    fileStream.close(null);
-    dataStream.close(null);
-    if (prevUploadBytes === 0) {
+      if (fileStream) {
+        fileStream.close(null);
+      }
+      if (dataStream) {
+        dataStream.close(null);
+      }
+      if (prevUploadBytes === 0) {
+        prevUploadBytes = uploadBytes;
+      }
+      if (prevDownloadBytes === 0) {
+        prevDownloadBytes = downloadBytes;
+      }
+
+      // Current upload speed
+      uploadSpeed = (uploadBytes - prevUploadBytes) / (refreshTime * unitBase);
+
+      // Current download speed
+      downloadSpeed = (downloadBytes - prevDownloadBytes) / (refreshTime * unitBase);
+
+      // Show upload + download = total speed on shell
+      netSpeed.set_text("⇅ " + netSpeedFormat(uploadSpeed + downloadSpeed));
       prevUploadBytes = uploadBytes;
-    }
-    if (prevDownloadBytes === 0) {
       prevDownloadBytes = downloadBytes;
     }
-
-    // Current upload speed
-    uploadSpeed = (uploadBytes - prevUploadBytes) / (refreshTime * unitBase);
-
-    // Current download speed
-    downloadSpeed = (downloadBytes - prevDownloadBytes) / (refreshTime * unitBase);
-
-    // Show upload + download = total speed on shell
-    netSpeed.set_text("⇅ " + netSpeedFormat(uploadSpeed + downloadSpeed));
-    prevUploadBytes = uploadBytes;
-    prevDownloadBytes = downloadBytes;
   } catch(e) {
     netSpeed.set_text( defaultNetSpeedText );
     saveExceptionLog(e);
@@ -85,21 +91,23 @@ function netSpeedFormat(speed) {
 function saveExceptionLog(e){
   let log_file = Gio.file_new_for_path( 
     home_dir + '/.local/var/log/InternetSpeedMeter.log' );
-
-  let log_file_size =  log_file.query_info( 
-    'standard::size', 0, null).get_size();
-  
-  if( log_file_size > logSize ){
-    log_file.replace( null,false, 0, null ).close(null);
+  if (log_file) {
+    let log_file_size =  log_file.query_info( 
+      'standard::size', 0, null).get_size();
+    
+    if(log_file_size > logSize) {
+      log_file.replace( null,false, 0, null ).close(null);
+    }
+    e += Date()+':\n' + e;
+    let logOutStream = log_file.append_to( 1, null );
+    if (logOutStream) {
+      logOutStream.write( e, null );
+      logOutStream.close(null);
+    }
   }
-  e += Date()+':\n' + e;
-  let logOutStream = log_file.append_to( 1, null );
-  logOutStream.write( e, null );
-  logOutStream.close(null);
-
 }
 
-function init() {
+function enable() {
   container = new St.Bin({
     style_class: 'panel-button',
     reactive: true,
@@ -115,14 +123,22 @@ function init() {
     y_align: Clutter.ActorAlign.CENTER
   });
   container.set_child(netSpeed);
-}
 
-function enable() {
   Main.panel._rightBox.insert_child_at_index(container, 0);
   timeout = Mainloop.timeout_add_seconds(refreshTime, getNetSpeed);
 }
 
 function disable() {
+  if (netSpeed) {
+    netSpeed.destroy();
+    netSpeed = null;
+  }
+
+  if (container) {
+    container.destroy();
+    container = null;
+  }
+
   Mainloop.source_remove(timeout);
   Main.panel._rightBox.remove_child(container);
 }
