@@ -88,7 +88,7 @@ function netSpeedFormat(speed) {
   return String(speed.toFixed(2) + " " + units[i]);
 }
 
-function saveExceptionLog(e){
+function saveExceptionLog(e) {
   let log_file = Gio.file_new_for_path( 
     home_dir + '/.local/var/log/InternetSpeedMeter.log' );
   if (log_file) {
@@ -133,12 +133,12 @@ function disable() {
     netSpeed.destroy();
     netSpeed = null;
   }
-
+  if (timeout) {
+    Mainloop.source_remove(timeout);
+  }
   if (container) {
+    Main.panel._rightBox.remove_child(container);
     container.destroy();
     container = null;
   }
-
-  Mainloop.source_remove(timeout);
-  Main.panel._rightBox.remove_child(container);
 }
