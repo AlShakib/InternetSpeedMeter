@@ -129,10 +129,6 @@ function enable() {
 }
 
 function disable() {
-  if (netSpeed) {
-    netSpeed.destroy();
-    netSpeed = null;
-  }
   if (timeout) {
     Mainloop.source_remove(timeout);
   }
@@ -140,5 +136,9 @@ function disable() {
     Main.panel._rightBox.remove_child(container);
     container.destroy();
     container = null;
+  }
+  if (netSpeed) {
+    netSpeed.destroy();
+    netSpeed = null;
   }
 }
