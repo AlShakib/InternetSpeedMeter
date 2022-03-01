@@ -54,12 +54,6 @@ function getNetSpeed() {
       if (dataStream) {
         dataStream.close(null);
       }
-      if (prevUploadBytes === 0) {
-        prevUploadBytes = uploadBytes;
-      }
-      if (prevDownloadBytes === 0) {
-        prevDownloadBytes = downloadBytes;
-      }
 
       // Current upload speed
       uploadSpeed = (uploadBytes - prevUploadBytes) / (refreshTime * unitBase);
