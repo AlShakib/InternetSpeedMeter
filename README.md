@@ -90,4 +90,4 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 [GNU General Public License v3.0](LICENSE)
 
-Copyright © 2020 - 2021 [Al Shakib](https://alshakib.dev)
+Copyright © 2020 - 2022 [Al Shakib](https://alshakib.dev)
