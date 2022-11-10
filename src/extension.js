@@ -9,7 +9,7 @@
 const St = imports.gi.St;
 const Main = imports.ui.main;
 const Gio = imports.gi.Gio;
-const GLib  = imports.gi.GLib;
+const GLib = imports.gi.GLib;
 const Clutter = imports.gi.Clutter;
 const Mainloop = imports.mainloop;
 var Shell = imports.gi.Shell;
@@ -34,17 +34,17 @@ function getNetSpeed() {
       let uploadBytes = 0;
       let downloadBytes = 0;
       let line;
-      for (let i=0;i<lines.length;i++) {
+      for (let i = 0; i < lines.length; i++) {
         line = lines[i].trim();
         let column = line.split(/\W+/);
         if (column.length <= 2) break;
         if (column[0] != 'lo' &&
-           !isNaN(parseInt(column[1])) &&
-           !column[0].match(/^br[0-9]+/) &&
-           !column[0].match(/^tun[0-9]+/) &&
-           !column[0].match(/^tap[0-9]+/) &&
-           !column[0].match(/^vnet[0-9]+/) &&
-           !column[0].match(/^virbr[0-9]+/)) {
+          !isNaN(parseInt(column[1])) &&
+          !column[0].match(/^br[0-9]+/) &&
+          !column[0].match(/^tun[0-9]+/) &&
+          !column[0].match(/^tap[0-9]+/) &&
+          !column[0].match(/^vnet[0-9]+/) &&
+          !column[0].match(/^virbr[0-9]+/)) {
           uploadBytes = uploadBytes + parseInt(column[9]);
           downloadBytes = downloadBytes + parseInt(column[1]);
         }
@@ -61,8 +61,8 @@ function getNetSpeed() {
       prevUploadBytes = uploadBytes;
       prevDownloadBytes = downloadBytes;
     }
-  } catch(e) {
-    netSpeed.set_text( defaultNetSpeedText );
+  } catch (e) {
+    netSpeed.set_text(defaultNetSpeedText);
     saveExceptionLog(e);
   }
   return true;
@@ -70,7 +70,7 @@ function getNetSpeed() {
 
 function netSpeedFormat(speed) {
   let i = 0;
-  while(speed >= unitBase) {  // Convert speed to KB, MB, GB or TB
+  while (speed >= unitBase) {  // Convert speed to KB, MB, GB or TB
     speed /= unitBase;
     i++;
   }
@@ -78,19 +78,19 @@ function netSpeedFormat(speed) {
 }
 
 function saveExceptionLog(e) {
-  let log_file = Gio.file_new_for_path( 
-    home_dir + '/.local/var/log/InternetSpeedMeter.log' );
+  let log_file = Gio.file_new_for_path(
+    home_dir + '/.local/var/log/InternetSpeedMeter.log');
   if (log_file) {
-    let log_file_size =  log_file.query_info( 
+    let log_file_size = log_file.query_info(
       'standard::size', 0, null).get_size();
-    
-    if(log_file_size > logSize) {
-      log_file.replace( null,false, 0, null ).close(null);
+
+    if (log_file_size > logSize) {
+      log_file.replace(null, false, 0, null).close(null);
     }
-    e += Date()+':\n' + e;
-    let logOutStream = log_file.append_to( 1, null );
+    e += Date() + ':\n' + e;
+    let logOutStream = log_file.append_to(1, null);
     if (logOutStream) {
-      logOutStream.write( e, null );
+      logOutStream.write(e, null);
       logOutStream.close(null);
     }
   }
@@ -107,7 +107,7 @@ function enable() {
   });
   defaultNetSpeedText = '⇅ -.-- --';
   netSpeed = new St.Label({
-    text: defaultNetSpeedText ,
+    text: defaultNetSpeedText,
     style_class: 'netSpeedLabel',
     y_align: Clutter.ActorAlign.CENTER
   });
