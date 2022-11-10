@@ -12,6 +12,8 @@ const Gio = imports.gi.Gio;
 const GLib  = imports.gi.GLib;
 const Clutter = imports.gi.Clutter;
 const Mainloop = imports.mainloop;
+var Shell = imports.gi.Shell;
+
 
 const refreshTime = 1.0; // Set refresh time to one second.
 const unitBase = 1024.0; // 1 GB == 1024MB or 1MB == 1024KB etc.
@@ -26,15 +28,14 @@ let logSize = 8000; // about 8k
 function getNetSpeed() {
   try {
     if (netSpeed) {
-      let file = Gio.file_new_for_path('/proc/net/dev');
-      let fileStream = file.read(null);
-      let dataStream = Gio.DataInputStream.new(fileStream);
+
+      let lines = Shell.get_file_contents_utf8_sync('/proc/net/dev').split('\n');
+
       let uploadBytes = 0;
       let downloadBytes = 0;
-      let line = '';
-      while((line = dataStream.read_line(null)) != null) {
-        line = String(line);
-        line = line.trim();
+      let line;
+      for (let i=0;i<lines.length;i++) {
+        line = lines[i].trim();
         let column = line.split(/\W+/);
         if (column.length <= 2) break;
         if (column[0] != 'lo' &&
@@ -47,12 +48,6 @@ function getNetSpeed() {
           uploadBytes = uploadBytes + parseInt(column[9]);
           downloadBytes = downloadBytes + parseInt(column[1]);
         }
-      }
-      if (fileStream) {
-        fileStream.close(null);
-      }
-      if (dataStream) {
-        dataStream.close(null);
       }
 
       // Current upload speed
