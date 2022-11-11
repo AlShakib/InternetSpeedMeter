@@ -1,58 +1,18 @@
 # ⇅ Internet Speed Meter
 
-A simple and minimal Internet Speed Meter extension for Gnome Shell.
-
-## Table of Contents
-
-* [Screenshot](#screenshot)
-* [Getting Started](#getting-started)
-  + [Prerequisite:](#prerequisite-)
-    - [Install Gnome Tweaks](#install-gnome-tweaks)
-  + [Install Internet Speed Meter from Gnome Extensions](#install-internet-speed-meter-from-gnome-extensions)
-  + [Install Internet Speed Meter from source](#install-internet-speed-meter-from-source)
-* [Contributing](#contributing)
-* [Thanks to](#thanks-to)
-* [License](#license)
-
-
-## Screenshot
+A simple and minimal Internet Speed Meter extension for the Gnome Shell.
 
 ![Screenshot](screenshot.png)
 
-## Getting Started
-
 To use this extension, you will need
 
-- Gnome Shell 3.20 or later
+- Gnome Shell 40 or later
 
-### Prerequisite: Install Gnome Tweaks
-
-For Ubuntu,
-
-```bash
-sudo add-apt-repository universe
-sudo apt install gnome-tweaks
-```
-
-For Fedora,
-
-```bash
-sudo dnf install gnome-tweaks
-```
-
-For Arch Linux,
-
-```bash
-sudo pacman -S gnome-tweak-tool
-```
-
-You may find Gnome Tweaks for other distributions as well. Install them accordingly.
-
-### Install Internet Speed Meter from Gnome Extensions
+### Install from Gnome Extensions
 
 Visit [Internet Speed Meter - GNOME Shell Extensions](https://extensions.gnome.org/extension/2980/internet-speed-meter/) 
 
-### Install Internet Speed Meter from source
+### Install from source
 
 1. Clone this repository
 
@@ -72,11 +32,9 @@ Visit [Internet Speed Meter - GNOME Shell Extensions](https://extensions.gnome.o
    chmod +x ./install.sh && ./install.sh
    ```
 
-4. Hit `ALT + F2`
+4. If you are using Wayland, log out and the log in. Otherwise press `ALT + F2` and then type `r` and press `Enter`
 
-5. Type `r` and hit `Enter`
-
-6. Enable Internet Speed Meter extension in Gnome Tweaks
+6. Enable **Internet Speed Meter** from the [Extension Manager](https://github.com/mjakeman/extension-manager)
 
 ## Contributing
 

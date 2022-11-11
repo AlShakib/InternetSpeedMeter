@@ -79,8 +79,6 @@ install() {
   mkdir -p "${INSTALL_DIR}"
   rm -rf "${INSTALL_DIR}/InternetSpeedMeter@alshakib.dev"
   cp -rf "${SRC_DIR}/src" "${INSTALL_DIR}/InternetSpeedMeter@alshakib.dev" &>> "$LOG_FILE"
-  mkdir -p "$HOME/.local/var/log/"
-  touch "$HOME/.local/var/log/InternetSpeedMeter.log"
   is_failed "Done" "Skipping: Can not install to ${INSTALL_DIR}. See log for more info."
 }
 
