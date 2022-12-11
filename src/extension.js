@@ -6,8 +6,6 @@
  * License: GPLv3.0
  */
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
 const St = imports.gi.St;
 const Main = imports.ui.main;
 const Clutter = imports.gi.Clutter;
@@ -21,7 +19,7 @@ const defaultNetSpeedText = "⇅ -.-- --";
 
 let prevUploadBytes = 0;
 let prevDownloadBytes = 0;
-let containerButton = null;
+let container = null;
 let netSpeedLabel = null;
 let timeoutId = 0;
 
@@ -46,8 +44,8 @@ function getBytes() {
       let download = parseInt(column[1]);
       let upload = parseInt(column[9]);
       if (!isNaN(download) && !isNaN(upload)) {
-        downloadBytes = download;
-        uploadBytes = upload;
+        downloadBytes += download;
+        uploadBytes += upload;
       }
     }
   }
@@ -100,9 +98,7 @@ function getFormattedSpeed(speed) {
 //
 // You MUST NOT make any changes to GNOME Shell, connect any signals or add any
 // MainLoop sources here.
-function init() {
-  log(`Initializing ${Me.metadata.name} (Version: ${Me.metadata.version})`);
-}
+function init() { }
 
 // This function could be called after your extension is enabled, which could
 // be done from GNOME Tweaks, when you log in or when the screen is unlocked.
@@ -110,9 +106,7 @@ function init() {
 // This is when you setup any UI for your extension, change existing widgets,
 // connect signals or modify GNOME Shell's behaviour.
 function enable() {
-  log(`Enabling ${Me.metadata.name} (Version: ${Me.metadata.version})`);
-  containerButton = new St.Bin({
-    style_class: "panel-button",
+  container = new St.Bin({
     reactive: true,
     can_focus: false,
     x_expand: true,
@@ -124,8 +118,8 @@ function enable() {
     style_class: "netSpeedLabel",
     y_align: Clutter.ActorAlign.CENTER,
   });
-  containerButton.set_child(netSpeedLabel);
-  Main.panel._rightBox.insert_child_at_index(containerButton, 0);
+  container.set_child(netSpeedLabel);
+  Main.panel._rightBox.insert_child_at_index(container, 0);
 
   let bytes = getBytes();
   prevDownloadBytes = bytes[0];
@@ -143,15 +137,14 @@ function enable() {
 // Anything you created, modifed or setup in enable() MUST be undone here. Not
 // doing so is the most common reason extensions are rejected during review!
 function disable() {
-  log(`Disabling ${Me.metadata.name} (Version: ${Me.metadata.version})`);
-  if (timeoutId > 0) {
+  if (timeoutId != 0) {
     Mainloop.source_remove(timeoutId);
     timeoutId = 0;
   }
-  if (containerButton != null) {
-    Main.panel._rightBox.remove_child(containerButton);
-    containerButton.destroy();
-    containerButton = null;
+  if (container != null) {
+    Main.panel._rightBox.remove_child(container);
+    container.destroy();
+    container = null;
   }
   netSpeedLabel = null;
 }
