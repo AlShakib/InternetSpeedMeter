@@ -34,7 +34,7 @@ function getBytes() {
       break;
     }
     if (
-      !column[0].match("lo") &&
+      !column[0].match(/^lo$/) &&
       !column[0].match(/^br[0-9]+/) &&
       !column[0].match(/^tun[0-9]+/) &&
       !column[0].match(/^tap[0-9]+/) &&
