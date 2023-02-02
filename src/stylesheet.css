@@ -10,4 +10,6 @@
   min-width: 105px;
   padding: 0 5px 0 5px;
   text-align: left;
+  color: white;
+  text-shadow: 1px 1px black;
 }
