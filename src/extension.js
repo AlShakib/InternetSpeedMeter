@@ -90,7 +90,8 @@ function getFormattedSpeed(speed) {
     speed /= unitBase;
     ++i;
   }
-  return speed.toFixed(2) + " " + units[i];
+  speed = ( speed > 10.0 ) ? speed.toFixed(1) : speed.toFixed(2)
+  return speed + " " + units[i];
 }
 
 // This function is called once when your extension is loaded, not enabled. This
