@@ -19,7 +19,8 @@ export default class InternetSpeedMeter extends Extension {
   static unitBase = 1024.0; // 1 GB == 1024MB or 1MB == 1024KB etc.
   static units = ["KB/s", "MB/s", "GB/s", "TB/s", "PB/s", "EB/s"];
 
-  defaultNetSpeedText = "----.--KB/s";
+  float_scale = 1;
+  defaultNetSpeedText = "----." + "-".repeat(this.float_scale) + "KB/s";
   prevUploadBytes = 0;
   prevDownloadBytes = 0;
   container = null;
@@ -96,7 +97,7 @@ export default class InternetSpeedMeter extends Extension {
       speed /= InternetSpeedMeter.unitBase;
       ++i;
     }
-    speed = speed.toFixed(2).toString();
+    speed = speed.toFixed(this.float_scale).toString();
 
     let split_speeds = speed.split(".");
     let speed_int = split_speeds[0];
