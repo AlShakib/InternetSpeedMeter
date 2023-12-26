@@ -6,22 +6,20 @@
  * License: GPLv3.0
  */
 
-import GLib from 'gi://GLib';
-import St from 'gi://St';
-import Clutter from 'gi://Clutter';
-import Shell from 'gi://Shell';
+import GLib from "gi://GLib";
+import St from "gi://St";
+import Clutter from "gi://Clutter";
+import Shell from "gi://Shell";
 
-import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
-import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import { Extension } from "resource:///org/gnome/shell/extensions/extension.js";
+import * as Main from "resource:///org/gnome/shell/ui/main.js";
 
 export default class InternetSpeedMeter extends Extension {
-
   static refreshTimeInSeconds = 1;
   static unitBase = 1024.0; // 1 GB == 1024MB or 1MB == 1024KB etc.
   static units = ["KB/s", "MB/s", "GB/s", "TB/s", "PB/s", "EB/s"];
 
-  arrowText = "⇅";
-  defaultNetSpeedText = "-.-- --" + this.arrowText;
+  defaultNetSpeedText = "----.--KB/s";
   prevUploadBytes = 0;
   prevDownloadBytes = 0;
   container = null;
@@ -66,14 +64,17 @@ export default class InternetSpeedMeter extends Extension {
         let uploadBytes = bytes[1];
 
         // Current upload speed
-        let uploadSpeed = (uploadBytes - this.prevUploadBytes) / InternetSpeedMeter.unitBase;
+        let uploadSpeed =
+          (uploadBytes - this.prevUploadBytes) / InternetSpeedMeter.unitBase;
 
         // Current download speed
-        let downloadSpeed = (downloadBytes - this.prevDownloadBytes) / InternetSpeedMeter.unitBase;
+        let downloadSpeed =
+          (downloadBytes - this.prevDownloadBytes) /
+          InternetSpeedMeter.unitBase;
 
         // Show upload + download = total speed on the shell
         this.netSpeedLabel.set_text(
-          this.getFormattedSpeed(uploadSpeed + downloadSpeed) + this.arrowText
+          this.getFormattedSpeed(uploadSpeed + downloadSpeed),
         );
 
         this.prevUploadBytes = uploadBytes;
@@ -97,13 +98,14 @@ export default class InternetSpeedMeter extends Extension {
     }
     speed = speed.toFixed(2).toString();
 
-    let split_speeds = speed.split('.');
+    let split_speeds = speed.split(".");
     let speed_int = split_speeds[0];
     let speed_float = split_speeds[1];
 
-    speed_int = speed_int.length < 4 ? "\u2007".repeat(
-      4-speed_int.length
-    ) + speed_int : speed_int;
+    speed_int =
+      speed_int.length < 4
+        ? " ".repeat(4 - speed_int.length) + speed_int
+        : speed_int;
 
     speed = speed_int + "." + speed_float;
     return speed + InternetSpeedMeter.units[i];
@@ -132,7 +134,7 @@ export default class InternetSpeedMeter extends Extension {
     this.timeoutId = GLib.timeout_add_seconds(
       GLib.PRIORITY_DEFAULT,
       InternetSpeedMeter.refreshTimeInSeconds,
-      this.updateNetSpeed.bind(this)
+      this.updateNetSpeed.bind(this),
     );
   }
 
