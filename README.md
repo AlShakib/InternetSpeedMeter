@@ -10,7 +10,7 @@ To use this extension, you will need
 
 ### Install from Gnome Extensions
 
-Visit [Internet Speed Meter - GNOME Shell Extensions](https://extensions.gnome.org/extension/2980/internet-speed-meter) 
+Visit [Internet Speed Meter - GNOME Shell Extensions](https://extensions.gnome.org/extension/2980/internet-speed-meter)
 
 ### Install from source
 
@@ -34,7 +34,7 @@ Visit [Internet Speed Meter - GNOME Shell Extensions](https://extensions.gnome.o
 
 4. If you are using Wayland, log out and then log in. Otherwise press `ALT + F2` and then type `r` and press `Enter`.
 
-6. Enable **Internet Speed Meter** from the [Extension Manager](https://github.com/mjakeman/extension-manager)
+5. Enable **Internet Speed Meter** from the [Extension Manager](https://github.com/mjakeman/extension-manager)
 
 ## Contributing
 
@@ -48,4 +48,4 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 [GNU General Public License v3.0](LICENSE)
 
-Copyright © 2020 - 2022 [Al Shakib](https://alshakib.dev)
+Copyright © 2020 - 2023 [Al Shakib](https://alshakib.dev)
