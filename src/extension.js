@@ -19,8 +19,9 @@ export default class InternetSpeedMeter extends Extension {
   static refreshTimeInSeconds = 1;
   static unitBase = 1024.0; // 1 GB == 1024MB or 1MB == 1024KB etc.
   static units = ["KB/s", "MB/s", "GB/s", "TB/s", "PB/s", "EB/s"];
-  static defaultNetSpeedText = "⇅ -.-- --";
 
+  arrowText = "⇅";
+  defaultNetSpeedText = "-.-- --" + this.arrowText;
   prevUploadBytes = 0;
   prevDownloadBytes = 0;
   container = null;
@@ -72,7 +73,7 @@ export default class InternetSpeedMeter extends Extension {
 
         // Show upload + download = total speed on the shell
         this.netSpeedLabel.set_text(
-          "⇅ " + this.getFormattedSpeed(uploadSpeed + downloadSpeed)
+          this.getFormattedSpeed(uploadSpeed + downloadSpeed) + this.arrowText
         );
 
         this.prevUploadBytes = uploadBytes;
@@ -80,7 +81,7 @@ export default class InternetSpeedMeter extends Extension {
         return true;
       } catch (e) {
         log(`Can not fetch internet speed from /proc/net/dev: ${e}`);
-        this.netSpeedLabel.set_text(InternetSpeedMeter.defaultNetSpeedText);
+        this.netSpeedLabel.set_text(this.defaultNetSpeedText);
       }
     }
     return false;
@@ -94,7 +95,18 @@ export default class InternetSpeedMeter extends Extension {
       speed /= InternetSpeedMeter.unitBase;
       ++i;
     }
-    return speed.toFixed(2) + " " + InternetSpeedMeter.units[i];
+    speed = speed.toFixed(2).toString();
+
+    let split_speeds = speed.split('.');
+    let speed_int = split_speeds[0];
+    let speed_float = split_speeds[1];
+
+    speed_int = speed_int.length < 4 ? "\u2007".repeat(
+      4-speed_int.length
+    ) + speed_int : speed_int;
+
+    speed = speed_int + "." + speed_float;
+    return speed + InternetSpeedMeter.units[i];
   }
 
   enable() {
@@ -106,7 +118,7 @@ export default class InternetSpeedMeter extends Extension {
       track_hover: false,
     });
     this.netSpeedLabel = new St.Label({
-      text: InternetSpeedMeter.defaultNetSpeedText,
+      text: this.defaultNetSpeedText,
       style_class: "netSpeedLabel",
       y_align: Clutter.ActorAlign.CENTER,
     });
