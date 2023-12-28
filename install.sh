@@ -28,31 +28,31 @@ fi
 # print <arg>
 print() {
   echo -e "${NC}[+] ${1}${NC}"
-  echo -e "[+] ${1}" &>> "$LOG_FILE"
+  echo -e "[+] ${1}" & >> "$LOG_FILE"
 }
 
 # print_warning <arg>
 print_warning() {
   echo -e "${NC}[${YELLOW}!${NC}] ${1}${NC}"
-  echo -e "[!] ${1}" &>> "$LOG_FILE"
+  echo -e "[!] ${1}" & >> "$LOG_FILE"
 }
 
 # print_failed <arg>
 print_failed() {
   echo -e "${NC}[${RED}x${NC}] ${1}${NC}"
-  echo -e "[x] ${1}" &>> "$LOG_FILE"
+  echo -e "[x] ${1}" & >> "$LOG_FILE"
 }
 
 # print_success <arg>
 print_success() {
   echo -e "${NC}[${GREEN}\xE2\x9C\x94${NC}] ${1}${NC}"
-  echo -e "[✔] ${1}" &>> "$LOG_FILE"
+  echo -e "[✔] ${1}" & >> "$LOG_FILE"
 }
 
 # print_suggestion <arg>
 print_suggestion() {
   echo -e "${NC}[${BLUE}#${NC}] ${1}${NC}"
-  echo -e "[#] ${1}" &>> "$LOG_FILE"
+  echo -e "[#] ${1}" & >> "$LOG_FILE"
 }
 
 # is_failed <success_message> <failed_message>
@@ -78,7 +78,7 @@ install() {
   print "Installing to ${INSTALL_DIR}"
   mkdir -p "${INSTALL_DIR}"
   rm -rf "${INSTALL_DIR}/InternetSpeedMeter@alshakib.dev"
-  cp -rf "${SRC_DIR}/src" "${INSTALL_DIR}/InternetSpeedMeter@alshakib.dev" &>> "$LOG_FILE"
+  cp -rf "${SRC_DIR}/src" "${INSTALL_DIR}/InternetSpeedMeter@alshakib.dev" & >> "$LOG_FILE"
   is_failed "Done" "Skipping: Can not install to ${INSTALL_DIR}. See log for more info."
 }
 
@@ -86,7 +86,7 @@ install() {
 build() {
   print "Creating InternetSpeedMeter@alshakib.dev.zip"
   mkdir -p "${SRC_DIR}/out"
-  zip -6rXj "$SRC_DIR/out/InternetSpeedMeter@alshakib.dev.zip" "src" &>> "$LOG_FILE"
+  zip -6rXj "$SRC_DIR/out/InternetSpeedMeter@alshakib.dev.zip" "src" & >> "$LOG_FILE"
   is_failed "Done" "Skipping: Creating zip is failed. See log for more info."
 }
 
