@@ -3,9 +3,10 @@
     "description": "Simple and minimal internet speed meter extension for the Gnome Shell",
     "uuid": "InternetSpeedMeter@alshakib.dev",
     "url": "https://github.com/AlShakib/InternetSpeedMeter",
-    "version": 18,
+    "version": 19,
     "shell-version": [
         "45",
-        "46"
+        "46",
+        "47"
     ]
 }
