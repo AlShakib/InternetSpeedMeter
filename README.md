@@ -6,7 +6,7 @@ A simple and minimal Internet Speed Meter extension for the Gnome Shell.
 
 To use this extension, you will need
 
-- Gnome Shell 40 or later
+- Gnome Shell 45 or later
 
 ### Install from Gnome Extensions
 
@@ -48,4 +48,4 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 [GNU General Public License v3.0](LICENSE)
 
-Copyright © 2020 - 2022 [Al Shakib](https://alshakib.dev)
+Copyright © 2020 - 2024 [Al Shakib](https://alshakib.dev)
