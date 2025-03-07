@@ -44,6 +44,7 @@ export default class InternetSpeedMeter extends Extension {
         !column[0].match(/^tap[0-9]+/) &&
         !column[0].match(/^vnet[0-9]+/) &&
         !column[0].match(/^virbr[0-9]+/) &&
+        !column[0].match(/^proton[0-9]+/) &&
         !column[0].match(/^(veth|br-|docker0)[a-zA-Z0-9]+/)
       ) {
         let download = parseInt(column[1]);
