@@ -1,98 +1,91 @@
 #!/usr/bin/env bash
 
+# --- Configuration ---
+UUID="InternetSpeedMeter@alshakib.dev"
+SRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+EXTENSION_SRC="${SRC_DIR}/src"
+OUT_DIR="${SRC_DIR}/out"
+LOG_DIR="${SRC_DIR}/log"
+LOG_FILE="${LOG_DIR}/build.log"
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-SRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )";
-LOG_DIR="${SRC_DIR}/log"
-LOG_FILE="${LOG_DIR}/build.log";
+NC='\033[0m'
+
 mkdir -p "${LOG_DIR}"
-if [[ -f "${LOG_FILE}" ]]; then
-  echo '' >> "${LOG_FILE}"
-  echo "$(date '+%d/%m/%Y %H:%M:%S')" >> "${LOG_FILE}"
-  echo '' >> "${LOG_FILE}"
-else
-  touch "${LOG_FILE}"
-  echo "$(date '+%d/%m/%Y %H:%M:%S')" >> "${LOG_FILE}"
-  echo '' >> "${LOG_FILE}"
-fi
+echo -e "\n--- Build started: $(date '+%Y-%m-%d %H:%M:%S') ---" >> "${LOG_FILE}"
 
-INSTALL_DIR="${HOME}/.local/share/gnome-shell/extensions"
-if [[ "$(id -u)" -eq 0 ]]; then
-  chown "${SUDO_USER}":"${SUDO_USER}" -R "${LOG_DIR}"
-  INSTALL_DIR="/usr/share/gnome-shell/extensions"
-fi
+# --- Helpers ---
+print_info() { echo -e "${NC}[+] ${1}${NC}"; echo "[+] ${1}" >> "$LOG_FILE"; }
+print_success() { echo -e "${NC}[${GREEN}✔${NC}] ${1}${NC}"; echo "[✔] ${1}" >> "$LOG_FILE"; }
+print_error() { echo -e "${NC}[${RED}x${NC}] ${1}${NC}"; echo "[x] ${1}" >> "$LOG_FILE"; }
 
-# print <arg>
-print() {
-  echo -e "${NC}[+] ${1}${NC}"
-  echo -e "[+] ${1}" &>> "$LOG_FILE"
+# --- Actions ---
+
+install_extension() {
+    local install_path="${HOME}/.local/share/gnome-shell/extensions"
+    if [[ "$(id -u)" -eq 0 ]]; then install_path="/usr/share/gnome-shell/extensions"; fi
+    local target_dir="${install_path}/${UUID}"
+
+    print_info "Installing files..."
+    mkdir -p "${install_path}"
+    rm -rf "${target_dir}"
+    cp -rf "${EXTENSION_SRC}" "${target_dir}" &>> "$LOG_FILE"
+
+    if [[ $? -eq 0 ]]; then
+        print_success "Files copied to ${target_dir}"
+    else
+        print_error "Installation failed."
+        exit 1
+    fi
 }
 
-# print_warning <arg>
-print_warning() {
-  echo -e "${NC}[${YELLOW}!${NC}] ${1}${NC}"
-  echo -e "[!] ${1}" &>> "$LOG_FILE"
+reload_extension() {
+    install_extension
+
+    print_info "Reloading ${UUID}..."
+
+    # Disable the extension
+    gnome-extensions disable "${UUID}" &>> "$LOG_FILE"
+
+    # Give the shell a moment to process the removal
+    sleep 0.5
+
+    # Enable the extension
+    gnome-extensions enable "${UUID}" &>> "$LOG_FILE"
+
+    if [[ $? -eq 0 ]]; then
+        print_success "Extension reloaded successfully!"
+    else
+        print_error "Failed to enable extension. Is it installed correctly?"
+        print_info "Try running: gnome-extensions enable ${UUID}"
+    fi
 }
 
-# print_failed <arg>
-print_failed() {
-  echo -e "${NC}[${RED}x${NC}] ${1}${NC}"
-  echo -e "[x] ${1}" &>> "$LOG_FILE"
+build_zip() {
+    print_info "Building release ZIP..."
+    mkdir -p "${OUT_DIR}"
+    local zip_file="${OUT_DIR}/${UUID}.zip"
+    rm -f "${zip_file}"
+    (cd "${EXTENSION_SRC}" && zip -r "${zip_file}" . -x "*.DS_Store" "*.git*") &>> "$LOG_FILE"
+    [[ $? -eq 0 ]] && print_success "Zip created at ${zip_file}" || print_error "Zip failed."
 }
 
-# print_success <arg>
-print_success() {
-  echo -e "${NC}[${GREEN}\xE2\x9C\x94${NC}] ${1}${NC}"
-  echo -e "[✔] ${1}" &>> "$LOG_FILE"
-}
-
-# print_suggestion <arg>
-print_suggestion() {
-  echo -e "${NC}[${BLUE}#${NC}] ${1}${NC}"
-  echo -e "[#] ${1}" &>> "$LOG_FILE"
-}
-
-# is_failed <success_message> <failed_message>
-is_failed() {
-  if [[ "$?" -eq 0 ]]; then
-    print_success "${1}"
-  else
-    print_failed "${2}"
-  fi
-}
-
-# is_warning <success_message> <warning_message>
-is_warning() {
-  if [[ "$?" -eq 0 ]]; then
-    print_success "${1}"
-  else
-    print_warning "${2}"
-  fi
-}
-
-# install extension
-install() {
-  print "Installing to ${INSTALL_DIR}"
-  mkdir -p "${INSTALL_DIR}"
-  rm -rf "${INSTALL_DIR}/InternetSpeedMeter@alshakib.dev"
-  cp -rf "${SRC_DIR}/src" "${INSTALL_DIR}/InternetSpeedMeter@alshakib.dev" &>> "$LOG_FILE"
-  is_failed "Done" "Skipping: Can not install to ${INSTALL_DIR}. See log for more info."
-}
-
-# build for release
-build() {
-  print "Creating InternetSpeedMeter@alshakib.dev.zip"
-  mkdir -p "${SRC_DIR}/out"
-  zip -6rXj "$SRC_DIR/out/InternetSpeedMeter@alshakib.dev.zip" "src" &>> "$LOG_FILE"
-  is_failed "Done" "Skipping: Creating zip is failed. See log for more info."
-}
-
-# Let's start
-if [[ "${1}" == "-b" ]]; then
-  build
-else
-  install
-fi
+# --- Execution ---
+case "${1}" in
+    -b|--build)
+        build_zip
+        ;;
+    -r|--reload)
+        reload_extension
+        ;;
+    -i|--install)
+        install_extension
+        ;;
+    *)
+        echo "Usage: $0 {-i|--install | -b|--build | -r|--reload}"
+        exit 1
+        ;;
+esac
