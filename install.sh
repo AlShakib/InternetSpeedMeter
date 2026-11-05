@@ -21,6 +21,7 @@ echo -e "\n--- Build started: $(date '+%Y-%m-%d %H:%M:%S') ---" >> "${LOG_FILE}"
 print_info() { echo -e "${NC}[+] ${1}${NC}"; echo "[+] ${1}" >> "$LOG_FILE"; }
 print_success() { echo -e "${NC}[${GREEN}✔${NC}] ${1}${NC}"; echo "[✔] ${1}" >> "$LOG_FILE"; }
 print_error() { echo -e "${NC}[${RED}x${NC}] ${1}${NC}"; echo "[x] ${1}" >> "$LOG_FILE"; }
+print_warning() { echo -e "${NC}[${YELLOW}!${NC}] ${1}${NC}"; echo "[!] ${1}" >> "$LOG_FILE"; }
 
 # --- Actions ---
 
@@ -57,11 +58,42 @@ reload_extension() {
     gnome-extensions enable "${UUID}" &>> "$LOG_FILE"
 
     if [[ $? -eq 0 ]]; then
-        print_success "Extension reloaded successfully!"
+        # GNOME Shell imports extension.js only once per session. Disable and
+        # enable run the code that is already loaded, and only reload the
+        # stylesheet.
+        print_success "Extension disabled and enabled again."
+        print_warning "Only stylesheet.css was reloaded. GNOME Shell loads extension.js once per session."
+        print_info "To run changed code: log out and log in, or run: $0 --nested"
     else
         print_error "Failed to enable extension. Is it installed correctly?"
         print_info "Try running: gnome-extensions enable ${UUID}"
     fi
+}
+
+run_nested_shell() {
+    local shell_args
+    if gnome-shell --help 2>&1 | grep -q -- '--devkit'; then
+        # GNOME 49 and later removed --nested. --devkit shows the new shell
+        # in the mutter-devkit window.
+        if [[ ! -x /usr/libexec/mutter-devkit ]]; then
+            print_error "mutter-devkit is not installed."
+            print_info "Install it (Fedora: sudo dnf install mutter-devkit), then run $0 --nested again."
+            exit 1
+        fi
+        shell_args=(--devkit)
+    else
+        shell_args=(--nested --wayland)
+    fi
+
+    install_extension
+
+    print_info "Starting a nested GNOME Shell: gnome-shell ${shell_args[*]}"
+    print_info "Close its window to stop it. Its log is in ${LOG_FILE}."
+    # A separate D-Bus session keeps the nested shell apart from the running
+    # one. It reads the same dconf settings, so the extension is enabled in
+    # it, and it imports the newly installed extension.js.
+    MUTTER_DEBUG_DUMMY_MODE_SPECS=1366x768 \
+        dbus-run-session -- gnome-shell "${shell_args[@]}" &>> "$LOG_FILE"
 }
 
 build_zip() {
@@ -84,8 +116,11 @@ case "${1}" in
     -i|--install)
         install_extension
         ;;
+    -n|--nested)
+        run_nested_shell
+        ;;
     *)
-        echo "Usage: $0 {-i|--install | -b|--build | -r|--reload}"
+        echo "Usage: $0 {-i|--install | -b|--build | -r|--reload | -n|--nested}"
         exit 1
         ;;
 esac

@@ -40,6 +40,21 @@ Visit [Internet Speed Meter - GNOME Shell Extensions](https://extensions.gnome.o
    gnome-extensions enable InternetSpeedMeter@alshakib.dev
    ```
 
+## Development
+
+Gnome Shell loads `extension.js` only once per session. To test changed code without logging out, run it in a nested Gnome Shell:
+
+```bash
+./install.sh --nested
+```
+
+On Gnome 49 or later, this needs the `mutter-devkit` package (Fedora: `sudo dnf install mutter-devkit`).
+
+Other options of `install.sh`:
+
+- `--reload` installs the files and reloads only `stylesheet.css` in the running shell.
+- `--build` creates the release ZIP in `out/`.
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
