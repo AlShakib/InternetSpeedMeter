@@ -29,12 +29,16 @@ Visit [Internet Speed Meter - GNOME Shell Extensions](https://extensions.gnome.o
 3. Now run
 
    ```bash
-   chmod +x ./install.sh && ./install.sh
+   chmod +x ./install.sh && ./install.sh --install
    ```
 
-4. If you are using Wayland, log out and then log in. Otherwise press `ALT + F2` and then type `r` and press `Enter`.
+4. Log out and then log in, so that Gnome Shell finds the new extension. On an X11 session (Gnome 48 or earlier), you can instead press `ALT + F2`, type `r` and press `Enter`.
 
-6. Enable **Internet Speed Meter** from the [Extension Manager](https://github.com/mjakeman/extension-manager)
+5. Enable **Internet Speed Meter** from the [Extension Manager](https://github.com/mjakeman/extension-manager), or run
+
+   ```bash
+   gnome-extensions enable InternetSpeedMeter@alshakib.dev
+   ```
 
 ## Contributing
 
