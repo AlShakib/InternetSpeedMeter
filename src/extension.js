@@ -36,6 +36,11 @@ export default class InternetSpeedMeter extends Extension {
   // counting them would count the same bytes twice. A list of name patterns
   // can not do this reliably, because a WireGuard or VPN interface can have
   // any name.
+  //
+  // PPP interfaces are virtual too, and they are not counted on purpose.
+  // PPPoE and PPTP/L2TP VPNs send their traffic through a physical device.
+  // The only traffic that is lost is PPP over a serial modem; most USB modems
+  // now use QMI or MBIM with a physical wwan device instead.
   isPhysicalInterface(interfaceName) {
     return GLib.file_test(
       `/sys/class/net/${interfaceName}/device`,
