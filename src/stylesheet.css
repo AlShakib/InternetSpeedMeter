@@ -6,8 +6,9 @@
 * License: GPLv3.0
 */
 
+/* The label is inside a .panel-button, which already has the horizontal
+ * padding of the other panel buttons. */
 .netSpeedLabel {
   min-width: 105px;
-  padding: 0 5px 0 5px;
   text-align: left;
 }

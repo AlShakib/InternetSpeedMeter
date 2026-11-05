@@ -13,6 +13,7 @@ import Shell from 'gi://Shell';
 
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 
 export default class InternetSpeedMeter extends Extension {
 
@@ -21,8 +22,11 @@ export default class InternetSpeedMeter extends Extension {
   static units = ["KB/s", "MB/s", "GB/s", "TB/s", "PB/s", "EB/s"];
   static defaultNetSpeedText = "⇅ -.-- --";
 
+  static microsecondsPerSecond = 1000000.0;
+
   previousBytesByInterface = new Map();
-  container = null;
+  previousSampleTime = 0; // GLib.get_monotonic_time() of previousBytesByInterface
+  indicator = null;
   netSpeedLabel = null;
   timeoutId = 0;
 
@@ -95,16 +99,26 @@ export default class InternetSpeedMeter extends Extension {
   // Update current net speed (upload + download) to shell
   updateNetSpeed() {
     let currentBytesByInterface = this.getBytesByInterface();
+    let currentSampleTime = GLib.get_monotonic_time();
     if (currentBytesByInterface == null) {
       this.netSpeedLabel.set_text(InternetSpeedMeter.defaultNetSpeedText);
       // Start again from an empty sample. Otherwise the first successful read
       // would show the bytes of several intervals as the speed of one.
       this.previousBytesByInterface = new Map();
     } else {
-      let speed = this.getTransferredBytes(currentBytesByInterface) / InternetSpeedMeter.unitBase;
-      this.netSpeedLabel.set_text("⇅ " + this.getFormattedSpeed(speed));
+      // GLib.timeout_add_seconds() does not fire at exact one second
+      // intervals, and a busy main loop delays it more. So divide by the
+      // measured time between the two samples, not by the refresh time.
+      let elapsedSeconds =
+        (currentSampleTime - this.previousSampleTime) / InternetSpeedMeter.microsecondsPerSecond;
+      if (elapsedSeconds > 0) {
+        let bytesPerSecond = this.getTransferredBytes(currentBytesByInterface) / elapsedSeconds;
+        let speed = bytesPerSecond / InternetSpeedMeter.unitBase;
+        this.netSpeedLabel.set_text("⇅ " + this.getFormattedSpeed(speed));
+      }
       this.previousBytesByInterface = currentBytesByInterface;
     }
+    this.previousSampleTime = currentSampleTime;
     // Keep the timer running after a failed read, so the meter recovers on
     // the next tick. disable() is the only place that stops the timer.
     return GLib.SOURCE_CONTINUE;
@@ -122,22 +136,21 @@ export default class InternetSpeedMeter extends Extension {
   }
 
   enable() {
-    this.container = new St.Bin({
-      reactive: true,
-      can_focus: false,
-      x_expand: true,
-      y_expand: false,
-      track_hover: false,
-    });
+    // A panel button without a menu. It only shows the label, so turn off
+    // hover, focus and clicks.
+    this.indicator = new PanelMenu.Button(0.0, this.metadata.name, true);
+    this.indicator.setSensitive(false);
     this.netSpeedLabel = new St.Label({
       text: InternetSpeedMeter.defaultNetSpeedText,
       style_class: "netSpeedLabel",
       y_align: Clutter.ActorAlign.CENTER,
     });
-    this.container.set_child(this.netSpeedLabel);
-    Main.panel._rightBox.insert_child_at_index(this.container, 0);
+    this.indicator.add_child(this.netSpeedLabel);
+    // Position 0 of the right box: left of the system status icons.
+    Main.panel.addToStatusArea(this.uuid, this.indicator, 0, "right");
 
     this.previousBytesByInterface = this.getBytesByInterface() ?? new Map();
+    this.previousSampleTime = GLib.get_monotonic_time();
 
     this.timeoutId = GLib.timeout_add_seconds(
       GLib.PRIORITY_DEFAULT,
@@ -151,12 +164,14 @@ export default class InternetSpeedMeter extends Extension {
       GLib.Source.remove(this.timeoutId);
       this.timeoutId = 0;
     }
-    if (this.container != null) {
-      Main.panel._rightBox.remove_child(this.container);
-      this.container.destroy();
-      this.container = null;
+    if (this.indicator != null) {
+      // Destroying the button also removes it from the panel and from
+      // Main.panel.statusArea.
+      this.indicator.destroy();
+      this.indicator = null;
     }
     this.netSpeedLabel = null;
     this.previousBytesByInterface = new Map();
+    this.previousSampleTime = 0;
   }
 }
