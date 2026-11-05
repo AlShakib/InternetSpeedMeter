@@ -7,8 +7,15 @@
 */
 
 /* The label is inside a .panel-button, which already has the horizontal
- * padding of the other panel buttons. */
+ * padding of the other panel buttons.
+ *
+ * Tabular digits give all digits the same width, so the label does not get
+ * wider or narrower each second. The widest label ("⇅ 999.99 MB/s") is about
+ * 7.3em (107px at 11pt) with Inter, Adwaita Sans and Cantarell. A min-width
+ * in em keeps the label at one width and scales with the font size; a px
+ * value is too small for a larger font. */
 .netSpeedLabel {
-  min-width: 105px;
+  min-width: 7.5em;
+  font-feature-settings: "tnum";
   text-align: left;
 }

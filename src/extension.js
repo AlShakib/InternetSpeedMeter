@@ -124,10 +124,14 @@ export default class InternetSpeedMeter extends Extension {
     return GLib.SOURCE_CONTINUE;
   }
 
-  // Format bytes to readable string
+  // Format a speed in KB/s to a readable string. Go to the next unit when the
+  // value would print as 1000.00 or more (for example 1000 to 1023.99 KB/s),
+  // even though the units are 1024 apart. Four integer digits make the label
+  // wider than its min-width in stylesheet.css, and the panel icons move.
   getFormattedSpeed(speed) {
     let i = 0;
-    while (speed >= InternetSpeedMeter.unitBase) {
+    let lastUnitIndex = InternetSpeedMeter.units.length - 1;
+    while (i < lastUnitIndex && parseFloat(speed.toFixed(2)) >= 1000.0) {
       // Convert speed to KB, MB, GB or TB
       speed /= InternetSpeedMeter.unitBase;
       ++i;
