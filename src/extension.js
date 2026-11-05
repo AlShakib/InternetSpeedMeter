@@ -21,71 +21,93 @@ export default class InternetSpeedMeter extends Extension {
   static units = ["KB/s", "MB/s", "GB/s", "TB/s", "PB/s", "EB/s"];
   static defaultNetSpeedText = "⇅ -.-- --";
 
-  prevUploadBytes = 0;
-  prevDownloadBytes = 0;
+  previousBytesByInterface = new Map();
   container = null;
   netSpeedLabel = null;
   timeoutId = 0;
 
-  // Read total download and upload bytes from /proc/net/dev file
-  getBytes() {
-    let lines = Shell.get_file_contents_utf8_sync("/proc/net/dev").split("\n");
-    let downloadBytes = 0;
-    let uploadBytes = 0;
-    for (let i = 0; i < lines.length; ++i) {
-      let column = lines[i].trim().split(/\W+/);
-      if (column.length <= 2) {
-        break;
-      }
-      if (
-        !column[0].match(/^lo$/) &&
-        !column[0].match(/^br[0-9]+/) &&
-        !column[0].match(/^tun[0-9]+/) &&
-        !column[0].match(/^tap[0-9]+/) &&
-        !column[0].match(/^vnet[0-9]+/) &&
-        !column[0].match(/^virbr[0-9]+/) &&
-        !column[0].match(/^proton[0-9]+/) &&
-        !column[0].match(/^(veth|br-|docker0)[a-zA-Z0-9]+/)
-      ) {
-        let download = parseInt(column[1]);
-        let upload = parseInt(column[9]);
-        if (!isNaN(download) && !isNaN(upload)) {
-          downloadBytes += download;
-          uploadBytes += upload;
-        }
-      }
-    }
-    return [downloadBytes, uploadBytes];
+  // Only physical network devices have a "device" link in sysfs. Virtual
+  // interfaces (loopback, bridges, VPN tunnels, WireGuard, Tailscale, Docker,
+  // libvirt) do not. Their traffic also goes through a physical device, so
+  // counting them would count the same bytes twice. A list of name patterns
+  // can not do this reliably, because a WireGuard or VPN interface can have
+  // any name.
+  isPhysicalInterface(interfaceName) {
+    return GLib.file_test(
+      `/sys/class/net/${interfaceName}/device`,
+      GLib.FileTest.EXISTS
+    );
   }
 
-  // Update current net speed to shell
-  updateNetSpeed() {
-    if (this.netSpeedLabel != null) {
-      try {
-        let bytes = this.getBytes();
-        let downloadBytes = bytes[0];
-        let uploadBytes = bytes[1];
-
-        // Current upload speed
-        let uploadSpeed = (uploadBytes - this.prevUploadBytes) / InternetSpeedMeter.unitBase;
-
-        // Current download speed
-        let downloadSpeed = (downloadBytes - this.prevDownloadBytes) / InternetSpeedMeter.unitBase;
-
-        // Show upload + download = total speed on the shell
-        this.netSpeedLabel.set_text(
-          "⇅ " + this.getFormattedSpeed(uploadSpeed + downloadSpeed)
-        );
-
-        this.prevUploadBytes = uploadBytes;
-        this.prevDownloadBytes = downloadBytes;
-        return true;
-      } catch (e) {
-        log(`Can not fetch internet speed from /proc/net/dev: ${e}`);
-        this.netSpeedLabel.set_text(InternetSpeedMeter.defaultNetSpeedText);
+  // Read the total received + transmitted bytes of each physical interface
+  // from /proc/net/dev. Returns null if the file can not be read.
+  //
+  // A data line looks like "  eth0: <rx bytes> <7 rx fields> <tx bytes> ...".
+  // Interface names can contain "-" and "." (br-1a2b3c, eth0.100), but the
+  // kernel does not allow ":" or whitespace in them. So split the name off at
+  // the first colon and split only the counters on whitespace.
+  getBytesByInterface() {
+    let lines;
+    try {
+      lines = Shell.get_file_contents_utf8_sync("/proc/net/dev").split("\n");
+    } catch (e) {
+      console.error(`Can not fetch internet speed from /proc/net/dev: ${e}`);
+      return null;
+    }
+    let bytesByInterface = new Map();
+    for (let line of lines) {
+      let separatorIndex = line.indexOf(":");
+      if (separatorIndex < 0) {
+        // The two header lines and the trailing empty line have no colon.
+        continue;
+      }
+      let interfaceName = line.slice(0, separatorIndex).trim();
+      if (!this.isPhysicalInterface(interfaceName)) {
+        continue;
+      }
+      let counters = line.slice(separatorIndex + 1).trim().split(/\s+/);
+      let downloadBytes = parseInt(counters[0]);
+      let uploadBytes = parseInt(counters[8]);
+      if (!isNaN(downloadBytes) && !isNaN(uploadBytes)) {
+        bytesByInterface.set(interfaceName, downloadBytes + uploadBytes);
       }
     }
-    return false;
+    return bytesByInterface;
+  }
+
+  // Sum the byte change of each interface since the previous sample. An
+  // interface that appeared since then adds nothing, and one that went away
+  // is not in the current sample. So an interface that connects or
+  // disconnects (for example, USB tethering) can not make the total jump or
+  // go negative. A counter that went down (for example, after a driver reset)
+  // also adds nothing.
+  getTransferredBytes(currentBytesByInterface) {
+    let transferredBytes = 0;
+    for (let [interfaceName, currentBytes] of currentBytesByInterface) {
+      let previousBytes = this.previousBytesByInterface.get(interfaceName);
+      if (previousBytes !== undefined && currentBytes >= previousBytes) {
+        transferredBytes += currentBytes - previousBytes;
+      }
+    }
+    return transferredBytes;
+  }
+
+  // Update current net speed (upload + download) to shell
+  updateNetSpeed() {
+    let currentBytesByInterface = this.getBytesByInterface();
+    if (currentBytesByInterface == null) {
+      this.netSpeedLabel.set_text(InternetSpeedMeter.defaultNetSpeedText);
+      // Start again from an empty sample. Otherwise the first successful read
+      // would show the bytes of several intervals as the speed of one.
+      this.previousBytesByInterface = new Map();
+    } else {
+      let speed = this.getTransferredBytes(currentBytesByInterface) / InternetSpeedMeter.unitBase;
+      this.netSpeedLabel.set_text("⇅ " + this.getFormattedSpeed(speed));
+      this.previousBytesByInterface = currentBytesByInterface;
+    }
+    // Keep the timer running after a failed read, so the meter recovers on
+    // the next tick. disable() is the only place that stops the timer.
+    return GLib.SOURCE_CONTINUE;
   }
 
   // Format bytes to readable string
@@ -115,9 +137,7 @@ export default class InternetSpeedMeter extends Extension {
     this.container.set_child(this.netSpeedLabel);
     Main.panel._rightBox.insert_child_at_index(this.container, 0);
 
-    let bytes = this.getBytes();
-    this.prevDownloadBytes = bytes[0];
-    this.prevUploadBytes = bytes[1];
+    this.previousBytesByInterface = this.getBytesByInterface() ?? new Map();
 
     this.timeoutId = GLib.timeout_add_seconds(
       GLib.PRIORITY_DEFAULT,
@@ -137,5 +157,6 @@ export default class InternetSpeedMeter extends Extension {
       this.container = null;
     }
     this.netSpeedLabel = null;
+    this.previousBytesByInterface = new Map();
   }
 }
