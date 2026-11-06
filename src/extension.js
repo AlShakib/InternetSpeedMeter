@@ -173,13 +173,20 @@ export default class InternetSpeedMeter extends Extension {
       GLib.Source.remove(this.timeoutId);
       this.timeoutId = 0;
     }
+    // Destroying the button would also destroy the label, because the label
+    // is its child. Destroy the label explicitly anyway, so that each object
+    // made in enable() has a matching destroy() here, as the
+    // extensions.gnome.org review asks.
+    if (this.netSpeedLabel != null) {
+      this.netSpeedLabel.destroy();
+      this.netSpeedLabel = null;
+    }
     if (this.indicator != null) {
       // Destroying the button also removes it from the panel and from
       // Main.panel.statusArea.
       this.indicator.destroy();
       this.indicator = null;
     }
-    this.netSpeedLabel = null;
     this.previousBytesByInterface = new Map();
     this.previousSampleTime = 0;
   }
